@@ -1,0 +1,19 @@
+{
+  "name": "lebanon-monitor-backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node server.js",
+    "lint": "eslint .",
+    "process-telegram": "node api/process-telegram.js",
+    "ingest-rss": "node api/ingest-rss.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "rss-parser": "^3.13.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {}
+}
+
