@@ -7,17 +7,25 @@ interface NewsCardProps {
     category: NewsCategory;
     title: string;
     items: NewsItem[];
+    isLoading?: boolean;
+    visibleItems?: number;
     onExpand?: () => void;
 }
 
-const NewsCard: React.FC<NewsCardProps> = ({ category, title, items, onExpand }) => {
+const NewsCard: React.FC<NewsCardProps> = ({ category, title, items, isLoading = false, visibleItems = 5, onExpand }) => {
+    const CARD_ROW_MIN_HEIGHT = 64;
+    const CARD_ROW_GAP = 12;
+    const listMaxHeight = visibleItems * CARD_ROW_MIN_HEIGHT + (visibleItems - 1) * CARD_ROW_GAP;
+
     return (
         <div style={{
             display: 'flex',
             flexDirection: 'column',
             height: '100%',
             minWidth: '0',
-            background: 'rgba(255, 255, 255, 0.01)' /* Very subtle background */
+            background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03))',
+            border: '1px solid rgba(255, 255, 255, 0.16)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12), 0 12px 30px rgba(0,0,0,0.35)'
         }}>
             <div style={{
                 padding: '10px 15px',
@@ -25,7 +33,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ category, title, items, onExpand })
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                background: 'rgba(255, 255, 255, 0.03)',
+                background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06))',
                 boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)' /* Shiny edge */
             }}>
                 <h3 style={{
@@ -63,9 +71,22 @@ const NewsCard: React.FC<NewsCardProps> = ({ category, title, items, onExpand })
             <div style={{
                 flex: 1,
                 overflowY: 'auto',
-                padding: '10px'
+                padding: '10px',
+                background: 'rgba(5, 6, 8, 0.36)'
             }}>
-                {items.length === 0 ? (
+                {isLoading ? (
+                    <div style={{
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '9px',
+                        color: 'var(--text-secondary)',
+                        textAlign: 'center'
+                    }}>
+                        Loading live news...
+                    </div>
+                ) : items.length === 0 ? (
                     <div style={{
                         height: '100%',
                         display: 'flex',
@@ -78,12 +99,22 @@ const NewsCard: React.FC<NewsCardProps> = ({ category, title, items, onExpand })
                         No records in the selected time window.
                     </div>
                 ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '12px',
+                        maxHeight: `${listMaxHeight}px`,
+                        overflowY: 'auto',
+                        paddingRight: '4px'
+                    }}>
                         {items.map((item) => (
                             <div key={item.id} style={{
-                                borderLeft: '1px solid rgba(255,255,255,0.05)',
-                                paddingLeft: '10px',
-                                position: 'relative'
+                                borderLeft: '1px solid rgba(255,255,255,0.12)',
+                                background: 'rgba(255,255,255,0.04)',
+                                borderRadius: '6px',
+                                padding: '8px 10px',
+                                position: 'relative',
+                                minHeight: `${CARD_ROW_MIN_HEIGHT}px`
                             }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                                     <span style={{ fontSize: '9px', color: 'var(--glow-cyan)', fontWeight: 'bold' }}>

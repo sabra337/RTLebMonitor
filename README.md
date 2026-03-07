@@ -15,12 +15,47 @@ This backend is designed to:
 
 All database schema and Edge Functions in this repo are intended to be applied to this Supabase project.
 
+## Supabase MCP Setup (Codex)
+
+Use this script to reconfigure and re-login Supabase MCP for Codex:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\configure-supabase-mcp.ps1
+```
+
+If your project ref changes:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\configure-supabase-mcp.ps1 -ProjectRef "<new_project_ref>"
+```
+
+After login succeeds, restart your Codex session so MCP auth/config reloads.
+
 ## Components
 
 - Supabase SQL migrations under `supabase/migrations`
 - Supabase Edge Function for Telegram ingestion under `supabase/functions/ingest-telegram`
 - Vercel-compatible API routes for cron processing and RSS ingestion under `api/`
 - Telegram MTProto listener worker under `telegram-listener/`
+
+## Local Run (Frontend + Backend)
+
+Run both apps together:
+
+```powershell
+npm run dev:all
+```
+
+- Backend API: `http://localhost:3000`
+- Frontend app: `http://localhost:3001`
+
+Set frontend API target in `frontend/.env.local`:
+
+```powershell
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
+```
+
+Note: `frontend` reads env files from the `frontend/` folder (not the root `.env`).
 
 See the architecture plan in `.cursor/plans/lebanon-monitor-backend-architecture_a04a790b.plan.md` for full system design.
 

@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "node server.js",
+    "dev:backend": "node server.js",
+    "dev:frontend": "npm --prefix frontend run dev -- -p 3001",
+    "dev:all": "npx concurrently -k -n backend,frontend -c yellow,cyan \"npm run dev:backend\" \"npm run dev:frontend\"",
     "lint": "eslint .",
     "process-telegram": "node api/process-telegram.js",
     "ingest-rss": "node api/ingest-rss.js"

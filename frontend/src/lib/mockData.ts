@@ -59,7 +59,7 @@ export const MOCK_INCIDENTS: Incident[] = [
         type: 'STRIKE',
         location: 'Dahieh',
         time: new Date().toISOString(),
-        severity: 'HIGH'
+        severity: 3
     },
     {
         id: 'inc2',
@@ -67,6 +67,6 @@ export const MOCK_INCIDENTS: Incident[] = [
         type: 'WARNING',
         location: 'Bourj Hammoud',
         time: new Date().toISOString(),
-        severity: 'MEDIUM'
+        severity: 2
     }
 ];

@@ -15,8 +15,12 @@ export interface NewsItem {
 export interface Incident {
     id: string;
     text: string;
-    type: 'STRIKE' | 'WARNING' | 'SHELTER';
+    type: 'STRIKE' | 'WARNING';
     location: string;
     time: string;
-    severity?: string;
+    severity?: number;
+    coordinates?: {
+        lat: number;
+        lng: number;
+    } | null;
 }
