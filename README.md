@@ -38,6 +38,31 @@ After login succeeds, restart your Codex session so MCP auth/config reloads.
 - Vercel-compatible API routes for cron processing and RSS ingestion under `api/`
 - Telegram MTProto listener worker under `telegram-listener/`
 
+### Suggested schedules
+
+- `GET /api/ingest-rss` every 1-2 minutes
+- `GET /api/process-telegram` every 1 minute
+
+## Vercel Deployment
+
+Deploy as two separate Vercel projects.
+
+1. Backend project (repo root `.`)
+- Uses `vercel.json` for API runtime + cron schedules.
+- Required environment variables:
+  - `SUPABASE_URL`
+  - `SUPABASE_SERVICE_ROLE_KEY`
+  - `FRONTEND_ORIGIN` (your frontend Vercel URL)
+  - `CRON_SECRET` (recommended; protects cron endpoints)
+
+2. Frontend project (`frontend/`)
+- Framework: Next.js
+- Required environment variable:
+  - `NEXT_PUBLIC_API_BASE_URL=https://<your-backend-project>.vercel.app`
+
+When `CRON_SECRET` is set, `/api/ingest-rss` and `/api/process-telegram` require:
+- `Authorization: Bearer <CRON_SECRET>`
+
 ## Local Run (Frontend + Backend)
 
 Run both apps together:

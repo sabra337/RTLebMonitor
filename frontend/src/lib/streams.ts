@@ -1,0 +1,19 @@
+export interface StreamSource {
+    id: string;
+    name: string;
+    url: string;
+}
+
+export const NEWS_STREAMS: StreamSource[] = [
+    { id: 'aljazeera', name: 'Al Jazeera', url: 'https://www.youtube.com/embed/gCNeDWCI0vo' },
+    { id: 'lbci', name: 'LBCI', url: 'https://www.youtube.com/embed/WJ69rP_0V9c' },
+    { id: 'aljadeed', name: 'Al Jadeed', url: 'https://www.youtube.com/embed/n3E8j2hMT94' },
+    { id: 'mtv', name: 'MTV Lebanon', url: 'https://www.youtube.com/embed/c-p2r6z6rYQ' },
+];
+
+export const WEBCAM_STREAMS: StreamSource[] = [
+    { id: 'beirut-skyline', name: 'Beirut Skyline', url: 'https://www.youtube.com/embed/LGdnabZwVl8' },
+    { id: 'tehran-live', name: 'Tehran Live', url: 'https://www.youtube.com/embed/QKEvNQYepb0' },
+    { id: 'tel-aviv-live', name: 'Tel Aviv View', url: 'https://www.youtube.com/embed/gmtlJ_m2r5A' },
+    { id: 'galilee-live', name: 'Galilee View', url: 'https://www.youtube.com/embed/4E-iFtUM2kk' },
+];

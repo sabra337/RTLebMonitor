@@ -10,6 +10,7 @@ import IncidentFeed from "@/components/IncidentFeed";
 import { useIncidents } from "@/hooks/useIncidents";
 import { useNews } from "@/hooks/useNews";
 import { DashboardNewsCategory } from "@/lib/api";
+import { NEWS_STREAMS, WEBCAM_STREAMS } from "@/lib/streams";
 import { NewsItem } from "@/types";
 import { format } from 'date-fns';
 
@@ -54,25 +55,48 @@ export default function Home() {
       <div className="main-content">
         {/* Top Section: Map/Stream and Live Feed */}
         <div className="top-section">
-          {/* Left Column: Map and Stream under it */}
-          <div className="section-cell left-column">
-            <div className="map-container-wrapper">
-              <MapArea incidents={incidents} />
+          <div className="top-main-row">
+            {/* Left Column: Map */}
+            <div className="section-cell left-column">
+              <div className="map-container-wrapper">
+                <MapArea incidents={incidents} />
+              </div>
             </div>
-            <div className="stream-container-wrapper">
-              <StreamCard />
+
+            {/* Right Column: Live Feed */}
+            <div className="section-cell right-column">
+              <div className="feed-header">
+                <h2 style={{ fontSize: '12px', textTransform: 'uppercase', margin: 0, fontWeight: 'bold' }}>
+                  LIVE FEED <span style={{ color: 'var(--glow-amber)', marginLeft: '8px', opacity: 0.7 }}>[{incidents.length} ACTIVE]</span>
+                </h2>
+                <span className="status-pulsing" style={{ color: 'var(--glow-red)', fontSize: '9px', fontWeight: 'bold', paddingLeft: '15px' }}>LIVE</span>
+              </div>
+              <IncidentFeed incidents={incidents} isLoading={incidentsLoading} />
             </div>
           </div>
 
-          {/* Right Column: Live Feed */}
-          <div className="section-cell right-column">
-            <div className="feed-header">
-              <h2 style={{ fontSize: '12px', textTransform: 'uppercase', margin: 0, fontWeight: 'bold' }}>
-                LIVE FEED <span style={{ color: 'var(--glow-amber)', marginLeft: '8px', opacity: 0.7 }}>[{incidents.length} ACTIVE]</span>
-              </h2>
-              <span className="status-pulsing" style={{ color: 'var(--glow-red)', fontSize: '9px', fontWeight: 'bold', paddingLeft: '15px' }}>LIVE</span>
+          <div className="section-cell stream-row">
+            <div className="stream-container-wrapper">
+              <div className="stream-grid">
+                <div className="stream-grid-cell">
+                  <StreamCard
+                    title="News Livestreams"
+                    icon="youtube"
+                    accentColor="var(--glow-red)"
+                    streams={NEWS_STREAMS}
+                  />
+                </div>
+                <div className="stream-grid-cell">
+                  <StreamCard
+                    title="Live Webcams"
+                    icon="camera"
+                    accentColor="var(--glow-amber)"
+                    streams={WEBCAM_STREAMS}
+                    variant="collage"
+                  />
+                </div>
+              </div>
             </div>
-            <IncidentFeed incidents={incidents} isLoading={incidentsLoading} />
           </div>
         </div>
 

@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
+const { applyCors, handleOptions } = require('../lib/cors');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -46,6 +47,11 @@ function parseEwkbPoint(ewkbHex) {
  * text is formatted as "Strike on [Location]" or "Warning on [Location]"
  */
 module.exports = async (req, res) => {
+    if (handleOptions(req, res, 'GET,OPTIONS')) {
+        return;
+    }
+    applyCors(req, res, 'GET,OPTIONS');
+
     if (req.method !== 'GET') {
         res.statusCode = 405;
         res.setHeader('Content-Type', 'application/json; charset=utf-8');

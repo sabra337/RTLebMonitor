@@ -25,6 +25,8 @@ const NewsCard: React.FC<NewsCardProps> = ({ category, title, items, isLoading =
             minWidth: '0',
             background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03))',
             border: '1px solid rgba(255, 255, 255, 0.16)',
+            borderRadius: 'var(--card-radius)',
+            overflow: 'hidden',
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12), 0 12px 30px rgba(0,0,0,0.35)'
         }}>
             <div style={{
@@ -33,8 +35,8 @@ const NewsCard: React.FC<NewsCardProps> = ({ category, title, items, isLoading =
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06))',
-                boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)' /* Shiny edge */
+                background: 'var(--card-header-bg)',
+                boxShadow: 'var(--card-header-shadow)'
             }}>
                 <h3 style={{
                     fontSize: '11px',
@@ -44,19 +46,19 @@ const NewsCard: React.FC<NewsCardProps> = ({ category, title, items, isLoading =
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    color: 'var(--glow-cyan)', /* Primary title color */
-                    opacity: 0.9
+                    color: 'rgba(255,255,255,0.94)'
                 }}>
-                    <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 'normal' }}>N{category[0]}</span> {title}
+                    <span style={{ color: 'rgba(255,255,255,0.48)', fontWeight: 'normal' }}>N{category[0]}</span>
+                    {title}
                 </h3>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: 'var(--glow-green)', fontSize: '9px' }}>• LIVE</span>
+                    <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '9px' }}>LIVE</span>
                     <button
                         onClick={onExpand}
                         style={{
                             background: 'none',
                             border: 'none',
-                            color: 'var(--text-secondary)',
+                            color: 'rgba(255,255,255,0.72)',
                             cursor: 'pointer',
                             padding: '2px',
                             display: 'flex',
@@ -141,7 +143,6 @@ const NewsCard: React.FC<NewsCardProps> = ({ category, title, items, isLoading =
                 )}
             </div>
 
-            {/* Decorative Corner / Radar detail */}
             <div style={{
                 position: 'absolute',
                 bottom: '5px',

@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
+const { applyCors, handleOptions } = require('../lib/cors');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -14,9 +15,14 @@ const MAX_LIMIT = 200;
  * Query params: category (optional) LEBANON | REGIONAL | WORLDWIDE, limit (optional, default 100)
  * Returns: { lebanon: [], regional: [], worldwide: [] } or single list if ?category=X
  * Each item: { id, headline, summary, time, source, category, link, language }
- * headline/summary use English translation when available (title_en/summary_en), else original.
+ * headline/summary use stored title/summary.
  */
 async function getNews(req, res) {
+  if (handleOptions(req, res, 'GET,OPTIONS')) {
+    return;
+  }
+  applyCors(req, res, 'GET,OPTIONS');
+
   if (req.method !== 'GET') {
     res.statusCode = 405;
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -32,7 +38,7 @@ async function getNews(req, res) {
   try {
     let query = supabase
       .from('news_items')
-      .select('id, source, source_ref, source_label, title, title_en, summary, summary_en, published_at, category, language')
+      .select('id, source, source_ref, source_label, title, summary, published_at, category, language')
       .order('published_at', { ascending: false })
       .limit(limit * 3);
 
@@ -52,8 +58,8 @@ async function getNews(req, res) {
 
     const items = (rows || []).map((row) => ({
       id: row.id,
-      headline: row.title_en || row.title || row.summary || '',
-      summary: row.summary_en || row.summary || '',
+      headline: row.title || row.summary || '',
+      summary: row.summary || '',
       time: row.published_at,
       source: row.source_label || (row.source === 'TELEGRAM' ? 'Telegram' : row.source_ref || ''),
       category: row.category || 'WORLDWIDE',

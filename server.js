@@ -6,7 +6,6 @@ const ingestTelegramHandler = require('./api/ingest-telegram');
 const processTelegramHandler = require('./api/process-telegram');
 const getNews = require('./api/get-news');
 const getIncidents = require('./api/get-incidents');
-const translateNews = require('./api/translate-news');
 const backfillRssNews = require('./api/backfill-rss-news');
 
 const app = express();
@@ -33,8 +32,6 @@ app.post('/api/ingest-telegram', (req, res) => ingestTelegramHandler(req, res));
 app.all('/api/process-telegram', (req, res) => processTelegramHandler(req, res));
 app.get('/api/news', (req, res) => getNews(req, res));
 app.get('/api/incidents', (req, res) => getIncidents(req, res));
-app.post('/api/translate-news', (req, res) => translateNews(req, res));
-app.get('/api/translate-news', (req, res) => translateNews(req, res));
 
 app.get('/health', (_req, res) => {
   res.status(200).json({ ok: true });

@@ -2,6 +2,8 @@ const { createClient } = require('@supabase/supabase-js');
 const Parser = require('rss-parser');
 const { classifyCategory } = require('../lib/classify-news-category');
 const { cleanupNewsItems } = require('../lib/news-retention');
+const { stripEmojis } = require('../lib/text-sanitize');
+const { hasValidCronAuth, rejectCronAuth } = require('../lib/cron-auth');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -40,8 +42,9 @@ function rowForRssInbox(sourceId, item, languageFallback) {
 
 function rowForNewsItem(item, languageFallback, guidOrLink, sourceLabel) {
   const publishedAt = item.isoDate || item.pubDate || new Date().toISOString();
-  const title = item.title || null;
-  const summary = (item.contentSnippet || item.summary || '').slice(0, 512);
+  const title = stripEmojis(item.title || '') || null;
+  const summary = stripEmojis(item.contentSnippet || item.summary || '').slice(0, 512);
+  const normalizedLang = String(languageFallback || '').trim().toLowerCase();
   const category = classifyCategory(title, summary);
   return {
     source: 'RSS',
@@ -58,6 +61,8 @@ function rowForNewsItem(item, languageFallback, guidOrLink, sourceLabel) {
     source_label: sourceLabel || null,
     title_en: null,
     summary_en: null,
+    title_ar: normalizedLang === 'ar' ? title : null,
+    summary_ar: normalizedLang === 'ar' ? summary : null,
   };
 }
 
@@ -195,6 +200,10 @@ module.exports = async (req, res) => {
     res.statusCode = 405;
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.end(JSON.stringify({ error: 'Method not allowed' }));
+    return;
+  }
+  if (!hasValidCronAuth(req)) {
+    rejectCronAuth(res);
     return;
   }
 

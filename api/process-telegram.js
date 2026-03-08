@@ -1,6 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
 const { classifyCategory } = require('../lib/classify-news-category');
-const { translateToEnglish } = require('../lib/translate');
+const { stripEmojis } = require('../lib/text-sanitize');
+const { hasValidCronAuth, rejectCronAuth } = require('../lib/cron-auth');
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
@@ -49,15 +50,6 @@ function classifyFromScores(scores) {
     return { type: 'STRIKE', severity: 3, confidence: Math.min(1, scores.STRIKE / 3) };
   }
   return { type: 'WARNING', severity: 2, confidence: Math.min(1, scores.WARNING / 3) };
-}
-
-function stripEmojis(text) {
-  if (!text) return '';
-  // Basic emoji regex pattern (covers most common emojis)
-  return text
-    .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{1F191}-\u{1F251}\u{1F004}\u{1F0CF}\u{1F170}-\u{1F171}\u{1F17E}-\u{1F17F}\u{1F18E}\u{3030}\u{2B50}\u{2B55}\u{2934}-\u{2935}\u{2B05}-\u{2B07}\u{2B1B}-\u{2B1C}\u{3297}\u{3299}\u{303D}\u{00A9}\u{00AE}\u{2122}\u{23E9}-\u{23EF}\u{23F0}\u{23F3}\u{23F8}-\u{23FA}]/gu, '')
-    .replace(/\s+/g, ' ')
-    .trim();
 }
 
 function normalizeArabic(text) {
@@ -212,7 +204,7 @@ async function attachMessageToIncident(incidentId, telegramInboxId) {
   if (error) throw error;
 }
 
-async function createNewsItemFromMessage(message, classification, location, incidentId, textEn) {
+async function createNewsItemFromMessage(message, classification, location, incidentId) {
   const summaryRaw = message.text_ar || '';
   const summary = stripEmojis(summaryRaw);
   const category = classifyCategory(null, summary);
@@ -221,7 +213,9 @@ async function createNewsItemFromMessage(message, classification, location, inci
     source_ref: message.dedupe_id,
     title: null,
     summary: summary.slice(0, 512),
-    summary_en: textEn ? textEn.slice(0, 512) : null,
+    summary_en: null,
+    title_ar: null,
+    summary_ar: summary.slice(0, 512),
     body: null,
     language: 'ar',
     location_name: location ? location.name : null,
@@ -306,20 +300,17 @@ async function processPendingBatch(limit = 50) {
         await attachMessageToIncident(incidentId, msg.id);
       }
 
-      // 4. Translation (Async)
-      const textEn = await translateToEnglish(msg.text_ar);
+      // 4. Create News Item (Always recorded, regardless of mapping)
+      await createNewsItemFromMessage(msg, classification, location, incidentId);
 
-      // 5. Create News Item (Always recorded, regardless of mapping)
-      await createNewsItemFromMessage(msg, classification, location, incidentId, textEn);
-
-      // 6. Update Inbox
+      // 5. Update Inbox
       await supabase
         .from('telegram_inbox')
         .update({
           processing_status: 'PROCESSED',
           processed_at: new Date().toISOString(),
           incident_id: incidentId,
-          text_en: textEn,
+          text_en: null,
           processing_error: null
         })
         .eq('id', msg.id);
@@ -350,6 +341,10 @@ module.exports = async (req, res) => {
     res.statusCode = 405;
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.end(JSON.stringify({ error: 'Method not allowed' }));
+    return;
+  }
+  if (!hasValidCronAuth(req)) {
+    rejectCronAuth(res);
     return;
   }
 
