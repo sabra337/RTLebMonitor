@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
+const { createProcessingContext, processTelegramInboxRow } = require('../lib/telegram-processing');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -42,7 +43,7 @@ module.exports = async (req, res) => {
                 channel_name: payload.channel_name,
                 processing_status: 'PENDING'
             })
-            .select('id')
+            .select('*')
             .single();
 
         if (error) {
@@ -54,8 +55,16 @@ module.exports = async (req, res) => {
             throw error;
         }
 
+        const context = await createProcessingContext(supabase);
+        const processingResult = await processTelegramInboxRow(supabase, data, context);
+
         res.statusCode = 200;
-        res.end(JSON.stringify({ ok: true, id: data.id }));
+        res.end(JSON.stringify({
+            ok: true,
+            id: data.id,
+            processing_status: processingResult.status,
+            incident_id: processingResult.incidentId
+        }));
     } catch (err) {
         console.error('Ingest error:', err);
         res.statusCode = 500;
