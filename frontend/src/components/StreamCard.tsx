@@ -85,7 +85,7 @@ const StreamCard: React.FC<StreamCardProps> = ({
             overflow: 'hidden',
             boxShadow: `inset 0 1px 0 rgba(255,255,255,0.08), inset 0 0 32px ${accentGlow}, 0 12px 30px rgba(0,0,0,0.35)`
         }}>
-            <div style={{
+            <div className="stream-card-header" style={{
                 padding: '10px 15px',
                 borderBottom: '1px solid var(--border-glass)',
                 display: 'flex',
@@ -117,15 +117,16 @@ const StreamCard: React.FC<StreamCardProps> = ({
                     }} />
                     {title}
                 </h3>
-                <span style={{ color: 'rgba(255,255,255,0.72)', fontSize: '9px', fontWeight: 'bold' }}>{titleMeta}</span>
+                <span className="stream-card-meta" style={{ color: 'rgba(255,255,255,0.72)', fontSize: '9px', fontWeight: 'bold' }}>{titleMeta}</span>
             </div>
 
             {variant === 'single' && activeSource ? (
-                <div style={{ padding: '8px', display: 'flex', gap: '6px', overflowX: 'auto', borderBottom: '1px solid var(--border-glass)', background: 'rgba(5, 6, 8, 0.36)', position: 'relative', zIndex: 2 }}>
+                <div className="stream-selector-bar" style={{ padding: '8px', display: 'flex', gap: '6px', overflowX: 'auto', borderBottom: '1px solid var(--border-glass)', background: 'rgba(5, 6, 8, 0.36)', position: 'relative', zIndex: 2 }}>
                     {streams.map(stream => (
                         <button
                             key={stream.id}
                             onClick={() => setActiveSourceId(stream.id)}
+                            className="stream-selector-button"
                             style={{
                                 padding: '4px 8px',
                                 fontSize: '9px',
@@ -159,7 +160,7 @@ const StreamCard: React.FC<StreamCardProps> = ({
                 zIndex: 1
             }}>
                 {variant === 'collage' ? (
-                    <div style={{
+                    <div className="stream-collage-grid" style={{
                         width: '100%',
                         height: '100%',
                         display: 'grid',
@@ -170,7 +171,7 @@ const StreamCard: React.FC<StreamCardProps> = ({
                         position: 'relative'
                     }}>
                         {collageStreams.map((stream) => (
-                            <div key={stream.id} style={{
+                            <div key={stream.id} className="stream-collage-cell" style={{
                                 position: 'relative',
                                 overflow: 'hidden',
                                 boxShadow: '0 0 24px rgba(0,0,0,0.45)'
@@ -223,7 +224,7 @@ const StreamCard: React.FC<StreamCardProps> = ({
                         }} />
                     </div>
                 ) : (
-                    <div style={{
+                    <div className="stream-player-shell" style={{
                         width: '100%',
                         height: '100%',
                         maxWidth: 'none',

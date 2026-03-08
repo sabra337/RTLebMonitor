@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import TopBar from "@/components/TopBar";
 import NewsCard from "@/components/NewsCard";
@@ -23,6 +23,10 @@ const MapArea = dynamic(() => import('@/components/Map/MapArea'), {
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<DashboardNewsCategory | null>(null);
   const [modalPage, setModalPage] = useState(1);
+  const [dismissedMobileNotice, setDismissedMobileNotice] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth <= 768 : false
+  );
   const { incidents, isLoading: incidentsLoading } = useIncidents();
   const { newsByCategory, isLoading: newsLoading } = useNews();
   const CARD_MAX_ITEMS = 10;
@@ -47,6 +51,13 @@ export default function Home() {
     (clampedModalPage - 1) * MODAL_PAGE_SIZE,
     clampedModalPage * MODAL_PAGE_SIZE
   );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 768px)');
+    const handleChange = (event: MediaQueryListEvent) => setIsMobileViewport(event.matches);
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   return (
     <div className="dashboard-container">
@@ -120,6 +131,37 @@ export default function Home() {
       <footer className="site-footer">
         @sabra
       </footer>
+
+      <Modal
+        isOpen={isMobileViewport && !dismissedMobileNotice}
+        onClose={() => setDismissedMobileNotice(true)}
+        title="Mobile Layout Notice"
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="glass-card" style={{ padding: '18px 20px', color: 'rgba(255,255,255,0.84)', lineHeight: '1.6' }}>
+            You are on mobile layout, it is highly advised to open on desktop for full experience.
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              onClick={() => setDismissedMobileNotice(true)}
+              style={{
+                padding: '10px 14px',
+                borderRadius: '6px',
+                border: '1px solid rgba(255, 170, 0, 0.35)',
+                background: 'rgba(255, 170, 0, 0.12)',
+                color: 'var(--text-primary)',
+                cursor: 'pointer',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                fontSize: '11px',
+                fontWeight: 'bold'
+              }}
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       <Modal
         isOpen={!!selectedCategory}

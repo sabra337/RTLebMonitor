@@ -555,6 +555,27 @@ a {
   .feed-content {
     max-height: 360px;
   }
+
+  .stream-card-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 6px;
+  }
+
+  .stream-card-meta {
+    display: block;
+    width: 100%;
+  }
+
+  .stream-selector-bar {
+    flex-wrap: wrap;
+    overflow-x: visible !important;
+  }
+
+  .stream-selector-button {
+    flex: 1 1 140px;
+    text-align: center;
+  }
 }
 
 @media (max-width: 480px) {
@@ -590,10 +611,23 @@ a {
   }
 
   .stream-grid-cell {
-    min-height: 320px;
+    min-height: 340px;
   }
 
   .stream-grid-cell > .stream-card-shell {
     border-radius: 0;
+  }
+
+  .stream-player-shell {
+    min-height: 260px;
+  }
+
+  .stream-collage-grid {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: repeat(4, minmax(180px, 1fr)) !important;
+  }
+
+  .stream-collage-cell {
+    min-height: 180px;
   }
 }
