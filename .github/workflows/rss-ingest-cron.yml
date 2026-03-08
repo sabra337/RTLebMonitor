@@ -19,7 +19,14 @@ jobs:
             exit 1
           fi
 
-          URL="${BACKEND_BASE_URL%/}/api/ingest-rss"
+          BASE_URL="$(printf '%s' "$BACKEND_BASE_URL" | tr -d '\r\n' | sed -e 's/^"//' -e 's/"$//')"
+          BASE_URL="${BASE_URL%/}"
+          if [[ ! "$BASE_URL" =~ ^https?:// ]]; then
+            echo "BACKEND_BASE_URL must start with http:// or https://"
+            exit 1
+          fi
+
+          URL="${BASE_URL}/api/ingest-rss"
           echo "Calling $URL"
 
           HTTP_CODE=$(curl -sS -o response.json -w "%{http_code}" \
