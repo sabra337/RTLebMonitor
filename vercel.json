@@ -4,15 +4,5 @@
       "runtime": "nodejs20.x",
       "maxDuration": 60
     }
-  },
-  "crons": [
-    {
-      "path": "/api/ingest-rss",
-      "schedule": "*/2 * * * *"
-    },
-    {
-      "path": "/api/process-telegram",
-      "schedule": "* * * * *"
-    }
-  ]
+  }
 }

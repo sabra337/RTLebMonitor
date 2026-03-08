@@ -35,7 +35,7 @@ After login succeeds, restart your Codex session so MCP auth/config reloads.
 
 - Supabase SQL migrations under `supabase/migrations`
 - Supabase Edge Function for Telegram ingestion under `supabase/functions/ingest-telegram`
-- Vercel-compatible API routes for cron processing and RSS ingestion under `api/`
+- Vercel-compatible API routes for ingestion and processing under `api/`
 - Telegram MTProto listener worker under `telegram-listener/`
 
 ### Suggested schedules
@@ -48,7 +48,7 @@ After login succeeds, restart your Codex session so MCP auth/config reloads.
 Deploy as two separate Vercel projects.
 
 1. Backend project (repo root `.`)
-- Uses `vercel.json` for API runtime + cron schedules.
+- Uses `vercel.json` for API runtime.
 - Required environment variables:
   - `SUPABASE_URL`
   - `SUPABASE_SERVICE_ROLE_KEY`
@@ -60,7 +60,7 @@ Deploy as two separate Vercel projects.
 - Required environment variable:
   - `NEXT_PUBLIC_API_BASE_URL=https://<your-backend-project>.vercel.app`
 
-When `CRON_SECRET` is set, `/api/ingest-rss` and `/api/process-telegram` require:
+For external schedulers (for example GitHub Actions), when `CRON_SECRET` is set, `/api/ingest-rss` and `/api/process-telegram` require:
 - `Authorization: Bearer <CRON_SECRET>`
 
 ## Local Run (Frontend + Backend)
