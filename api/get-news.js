@@ -1,10 +1,5 @@
-const { createClient } = require('@supabase/supabase-js');
 const { applyCors, handleOptions } = require('../lib/cors');
-
-const SUPABASE_URL = process.env.SUPABASE_URL || '';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+const { createPublicSupabaseClient } = require('../lib/supabase-public');
 
 const VALID_CATEGORIES = ['LEBANON', 'REGIONAL', 'WORLDWIDE'];
 const DEFAULT_LIMIT = 100;
@@ -36,6 +31,7 @@ async function getNews(req, res) {
   const limit = Math.min(parseInt(query.limit, 10) || DEFAULT_LIMIT, MAX_LIMIT);
 
   try {
+    const supabase = createPublicSupabaseClient();
     let query = supabase
       .from('news_items')
       .select('id, source, source_ref, source_label, title, summary, published_at, category, language')

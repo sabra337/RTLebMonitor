@@ -51,17 +51,20 @@ Deploy as two separate Vercel projects.
 - Uses `vercel.json` for API runtime.
 - Required environment variables:
   - `SUPABASE_URL`
+  - `SUPABASE_PUBLISHABLE_KEY` (preferred for public read routes) or legacy `SUPABASE_ANON_KEY`
   - `SUPABASE_SERVICE_ROLE_KEY`
   - `FRONTEND_ORIGIN` (your frontend Vercel URL)
-  - `CRON_SECRET` (recommended; protects cron endpoints)
+  - `CRON_SECRET` (required; protects admin/cron endpoints)
 
 2. Frontend project (`frontend/`)
 - Framework: Next.js
 - Required environment variable:
   - `NEXT_PUBLIC_API_BASE_URL=https://<your-backend-project>.vercel.app`
 
-For external schedulers (for example GitHub Actions), when `CRON_SECRET` is set, `/api/ingest-rss` and `/api/process-telegram` require:
+For external schedulers or manual admin calls, `/api/ingest-rss`, `/api/process-telegram`, and `/api/backfill-rss-news` require:
 - `Authorization: Bearer <CRON_SECRET>`
+
+`/api/backfill-rss-news` is `POST`-only and intended for manual/admin recovery runs.
 
 ## Local Run (Frontend + Backend)
 

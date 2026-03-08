@@ -1,10 +1,5 @@
-const { createClient } = require('@supabase/supabase-js');
 const { applyCors, handleOptions } = require('../lib/cors');
-
-const SUPABASE_URL = process.env.SUPABASE_URL || '';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+const { createPublicSupabaseClient } = require('../lib/supabase-public');
 
 function parseEwkbPoint(ewkbHex) {
     if (!ewkbHex || typeof ewkbHex !== 'string') return null;
@@ -60,6 +55,7 @@ module.exports = async (req, res) => {
     }
 
     try {
+        const supabase = createPublicSupabaseClient();
         const { data: incidents, error } = await supabase
             .from('incidents')
             .select('id, alert_type, location_name, started_at, severity, geo_point')

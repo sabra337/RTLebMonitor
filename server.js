@@ -7,10 +7,19 @@ const processTelegramHandler = require('./api/process-telegram');
 const getNews = require('./api/get-news');
 const getIncidents = require('./api/get-incidents');
 const backfillRssNews = require('./api/backfill-rss-news');
+const { isCronAuthConfigured } = require('./lib/cron-auth');
+const { isPublicSupabaseConfigured } = require('./lib/supabase-public');
 
 const app = express();
 const port = process.env.PORT || 3000;
 const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:3001';
+
+if (process.env.NODE_ENV === 'production' && !isCronAuthConfigured()) {
+  throw new Error('CRON_SECRET must be configured in production.');
+}
+if (process.env.NODE_ENV === 'production' && !isPublicSupabaseConfigured()) {
+  throw new Error('SUPABASE_PUBLISHABLE_KEY or SUPABASE_ANON_KEY must be configured in production.');
+}
 
 app.use(express.json());
 app.use((req, res, next) => {
@@ -27,7 +36,7 @@ app.use((req, res, next) => {
 });
 
 app.all('/api/ingest-rss', (req, res) => ingestRssHandler(req, res));
-app.all('/api/backfill-rss-news', (req, res) => backfillRssNews(req, res));
+app.post('/api/backfill-rss-news', (req, res) => backfillRssNews(req, res));
 app.post('/api/ingest-telegram', (req, res) => ingestTelegramHandler(req, res));
 app.all('/api/process-telegram', (req, res) => processTelegramHandler(req, res));
 app.get('/api/news', (req, res) => getNews(req, res));

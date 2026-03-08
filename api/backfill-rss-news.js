@@ -1,6 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
 const { classifyCategory } = require('../lib/classify-news-category');
 const { cleanupNewsItems } = require('../lib/news-retention');
+const { hasValidCronAuth, rejectCronAuth } = require('../lib/cron-auth');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -83,10 +84,14 @@ async function backfillFromRssInbox(maxRows) {
 }
 
 module.exports = async (req, res) => {
-  if (req.method !== 'GET' && req.method !== 'POST') {
+  if (req.method !== 'POST') {
     res.statusCode = 405;
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.end(JSON.stringify({ error: 'Method not allowed' }));
+    return;
+  }
+  if (!hasValidCronAuth(req)) {
+    rejectCronAuth(res);
     return;
   }
 
