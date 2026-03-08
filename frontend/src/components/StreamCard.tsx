@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Camera, Youtube } from 'lucide-react';
 import { StreamSource } from '@/lib/streams';
 
 interface StreamCardProps {
@@ -16,7 +15,6 @@ const StreamCard: React.FC<StreamCardProps> = ({
     streams = [],
     title = 'Live Stream',
     icon = 'youtube',
-    accentColor = 'var(--glow-red)',
     variant = 'single'
 }) => {
     const accentBorder = icon === 'camera' ? 'rgba(255, 170, 0, 0.26)' : 'rgba(255, 51, 51, 0.26)';
@@ -39,11 +37,27 @@ const StreamCard: React.FC<StreamCardProps> = ({
                 return url;
             }
 
-            parsed.searchParams.set('autoplay', '1');
-            parsed.searchParams.set('mute', '1');
-            parsed.searchParams.set('playsinline', '1');
-            parsed.searchParams.set('rel', '0');
-            return parsed.toString();
+            let embedUrl = parsed;
+            if (host.includes('youtu.be')) {
+                const videoId = parsed.pathname.replace(/^\/+/, '');
+                embedUrl = new URL(`https://www.youtube.com/embed/${videoId}`);
+            } else if (parsed.pathname.startsWith('/live/')) {
+                const videoId = parsed.pathname.replace(/^\/live\/+/, '').split('/')[0];
+                if (videoId) {
+                    embedUrl = new URL(`https://www.youtube.com/embed/${videoId}`);
+                }
+            } else if (parsed.pathname === '/watch') {
+                const videoId = parsed.searchParams.get('v');
+                if (videoId) {
+                    embedUrl = new URL(`https://www.youtube.com/embed/${videoId}`);
+                }
+            }
+
+            embedUrl.searchParams.set('autoplay', '1');
+            embedUrl.searchParams.set('mute', '1');
+            embedUrl.searchParams.set('playsinline', '1');
+            embedUrl.searchParams.set('rel', '0');
+            return embedUrl.toString();
         } catch {
             return url;
         }
@@ -94,11 +108,13 @@ const StreamCard: React.FC<StreamCardProps> = ({
                     gap: '8px',
                     color: 'var(--text-primary)'
                 }}>
-                    {icon === 'camera' ? (
-                        <Camera size={12} color={accentColor} />
-                    ) : (
-                        <Youtube size={12} color={accentColor} />
-                    )}
+                    <span style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        background: 'var(--glow-red)',
+                        boxShadow: '0 0 10px rgba(255, 51, 51, 0.9)'
+                    }} />
                     {title}
                 </h3>
                 <span style={{ color: 'rgba(255,255,255,0.72)', fontSize: '9px', fontWeight: 'bold' }}>{titleMeta}</span>

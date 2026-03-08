@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 const Ticker: React.FC = () => {
-    const [alerts, setAlerts] = useState<string[]>([
+    const alerts = [
         "CRITICAL: Blood type O- urgently needed at AUBMC.",
         "Baalbek residential area under new evacuation warning.",
         "3 shelter locations now accepting displaced families in Beirut.",
         "DISCLAIMER: This platform provides informational visualization only. Always follow official emergency guidance."
-    ]);
+    ];
 
     return (
         <div className="glass-panel" style={{
