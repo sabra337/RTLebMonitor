@@ -18,8 +18,18 @@ const TopBar: React.FC = () => {
             display: 'flex',
             flexDirection: 'column'
         }}>
-            <div className="announcement-bar">
-                Always check resources for misinformation
+            <div className="glass-panel announcement-bar">
+                <div className="announcement-track">
+                    {[
+                        "This is a monitoring dashboard, always check the resources for misinformation",
+                        "This is a monitoring dashboard, always check the resources for misinformation",
+                    ].map((message, index) => (
+                        <span key={index} className="announcement-item">
+                            <span className="announcement-dot">•</span>
+                            {message}
+                        </span>
+                    ))}
+                </div>
             </div>
 
             <nav className="glass-panel nav-header" style={{
