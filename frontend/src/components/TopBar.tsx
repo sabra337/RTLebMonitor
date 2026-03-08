@@ -1,9 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import StatusChip from './StatusChip';
 import { format } from 'date-fns';
-import Ticker from './Ticker';
 
 const TopBar: React.FC = () => {
     const [time, setTime] = useState(new Date());
@@ -20,7 +18,9 @@ const TopBar: React.FC = () => {
             display: 'flex',
             flexDirection: 'column'
         }}>
-            <Ticker />
+            <div className="announcement-bar">
+                Always check resources for misinformation
+            </div>
 
             <nav className="glass-panel nav-header" style={{
                 padding: '12px 24px',

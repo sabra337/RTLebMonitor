@@ -117,6 +117,10 @@ export default function Home() {
         </div>
       </div>
 
+      <footer className="site-footer">
+        @sabra
+      </footer>
+
       <Modal
         isOpen={!!selectedCategory}
         onClose={() => {
